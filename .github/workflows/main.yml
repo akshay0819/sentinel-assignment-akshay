@@ -1,0 +1,74 @@
+name: CI/CD for Rapyd Sentinel
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  terraform:
+    name: Terraform Validate, Lint, Plan, Apply
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: environments/dev
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials (via GitHub Secrets)
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Lint
+        run: tflint --recursive
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      # - name: Terraform Apply
+      #   if: github.ref == 'refs/heads/master'
+      #   run: terraform apply -auto-approve tfplan
+
+  # kubeval:
+  #   name: Kubernetes Manifests Lint & Dry-Run
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Install kubectl & kubeval
+  #       run: |
+  #         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  #         chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+  #         curl -sSL https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz | tar -xz
+  #         chmod +x kubeval && sudo mv kubeval /usr/local/bin/
+
+  #     - name: Kubeval Manifest Lint
+  #       run: kubeval k8s-manifests/
+
+  #     - name: Kubectl Dry-Run
+  #       run: |
+  #         kubectl apply --dry-run=client -f k8s-manifests/backend/
+  #         kubectl apply --dry-run=client -f k8s-manifests/proxy/
