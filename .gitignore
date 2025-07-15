@@ -1,0 +1,30 @@
+# Local Terraform state
+*.tfstate
+*.tfstate.backup
+.terraform/
+crash.log
+
+# Terraform plan files
+*.tfplan
+
+# CLI secrets
+.terraform.lock.hcl
+
+# AWS CLI credentials (never commit this)
+*.pem
+*.key
+
+# VSCode or JetBrains IDE settings
+.vscode/
+.idea/
+
+# macOS system files
+.DS_Store
+
+# Node/npm-related (if you ever use frontend tooling)
+node_modules/
+
+# Python (if you ever use automation scripts)
+__pycache__/
+*.pyc
+.env
