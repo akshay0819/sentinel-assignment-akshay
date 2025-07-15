@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "eu-central-1"
-  profile = "rapyd-sentinel"
+  #profile = "rapyd-sentinel"
 }
 
 module "backend" {
