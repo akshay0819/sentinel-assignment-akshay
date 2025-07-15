@@ -4,6 +4,6 @@ terraform {
     key            = "dev/terraform.tfstate"
     region         = "eu-central-1"
     profile        = "rapyd-sentinel"
-    # dynamodb_table = "rapyd-sentinel-tf-lock-dev"
+    dynamodb_table = "rapyd-sentinel-tf-lock-dev"
   }
 }
