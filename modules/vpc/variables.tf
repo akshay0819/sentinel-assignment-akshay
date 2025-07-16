@@ -27,3 +27,15 @@ variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
 }
+
+variable "enable_nat_gateway" {
+  description = "Whether to create a NAT Gateway for private subnets"
+  type        = bool
+  default     = true
+}
+
+variable "single_nat_gateway" {
+  description = "Use a single NAT Gateway across all AZs to reduce cost"
+  type        = bool
+  default     = true
+}

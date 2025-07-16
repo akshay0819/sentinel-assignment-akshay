@@ -60,12 +60,42 @@ resource "aws_route_table_association" "public_association" {
   route_table_id = aws_route_table.public_rt[0].id
 }
 
+
+resource "aws_eip" "nat" {
+  count = length(var.public_subnet_cidrs) > 0 ? 1 : 0
+
+  domain = "vpc"
+
+  tags = merge(var.tags, {
+    Name = "${var.name}-nat-eip"
+  })
+}
+
+resource "aws_nat_gateway" "nat" {
+  count = length(var.public_subnet_cidrs) > 0 ? 1 : 0
+
+  allocation_id = aws_eip.nat[0].id
+  subnet_id     = aws_subnet.public[0].id
+
+  tags = merge(var.tags, {
+    Name = "${var.name}-nat-gw"
+  })
+}
+
 resource "aws_route_table" "private_rt" {
   vpc_id = aws_vpc.vpc.id
 
   tags = merge(var.tags, {
     Name = "${var.name}-private-rt"
   })
+}
+
+resource "aws_route" "private_nat_route" {
+  count = length(var.public_subnet_cidrs) > 0 ? 1 : 0
+
+  route_table_id         = aws_route_table.private_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat[0].id
 }
 
 resource "aws_route_table_association" "private_association" {
