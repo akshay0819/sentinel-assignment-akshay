@@ -70,19 +70,34 @@ jobs:
         run: |
           aws s3 cp k8s/ s3://rapyd-sentinel-tf-state-dev-eu-central-1/k8s/ --recursive
 
-      - name: Deploy Manifests via SSM
+      - name: Deploy Gateway Manifests via SSM
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --comment "Apply Kubernetes Manifests from EC2 Bastion" \
-            --targets '[{"Key":"tag:Name","Values":["akshay-eks-ssm-bastion"]}]' \
+            --comment "Apply Gateway K8s Manifests" \
+            --targets '[{"Key":"tag:Name","Values":["akshay-eks-ssm-bastion-gateway"]}]' \
             --parameters '{
               "commands": [
                 "curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl",
                 "chmod +x kubectl && mv kubectl /usr/local/bin/",
                 "aws s3 cp s3://rapyd-sentinel-tf-state-dev-eu-central-1/k8s/ /tmp/k8s/ --recursive",
                 "aws eks update-kubeconfig --name eks-gateway --region eu-central-1",
-                "kubectl apply --dry-run=client -f /tmp/k8s/gateway/",
+                "kubectl apply --dry-run=client -f /tmp/k8s/gateway/"
+              ]
+            }' \
+            --region eu-central-1
+
+      - name: Deploy Backend Manifests via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --comment "Apply Backend K8s Manifests" \
+            --targets '[{"Key":"tag:Name","Values":["akshay-eks-ssm-bastion-backend"]}]' \
+            --parameters '{
+              "commands": [
+                "curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl",
+                "chmod +x kubectl && mv kubectl /usr/local/bin/",
+                "aws s3 cp s3://rapyd-sentinel-tf-state-dev-eu-central-1/k8s/ /tmp/k8s/ --recursive",
                 "aws eks update-kubeconfig --name eks-backend --region eu-central-1",
                 "kubectl apply --dry-run=client -f /tmp/k8s/backend/"
               ]

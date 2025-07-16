@@ -17,7 +17,7 @@ module "vpc_gateway" {
   public_subnet_cidrs  = ["10.10.10.0/24", "10.10.11.0/24"]
   azs                  = ["eu-central-1a", "eu-central-1b"]
   region               = "eu-central-1"
-  vpc_endpoint_sg_ids  = [module.bastion_backend.bastion_sg_id]
+  vpc_endpoint_sg_ids  = [module.bastion_gateway.bastion_sg_id]
   tags = {
     Environment = "dev"
   }
@@ -89,7 +89,7 @@ resource "aws_security_group_rule" "allow_gateway_to_backend" {
 
 module "bastion_backend" {
   source            = "../../modules/ec2_ssm_bastion"
-  name              = "eks-bastion"
+  name              = "eks-bastion-backend"
   ami_id            = "ami-0c7217cdde317cfec"
   instance_type     = "t3.micro"
   subnet_id         = module.vpc_backend.private_subnet_ids[0]
@@ -97,6 +97,20 @@ module "bastion_backend" {
 
   tags = {
     Environment = "dev",
-    Name = "eks-ssm-bastion"
+    Name        = "akshay-eks-ssm-bastion-backend"
+  }
+}
+
+module "bastion_gateway" {
+  source            = "../../modules/ec2_ssm_bastion"
+  name              = "eks-bastion-gateway"
+  ami_id            = "ami-0c7217cdde317cfec"
+  instance_type     = "t3.micro"
+  subnet_id         = module.vpc_gateway.private_subnet_ids[0]
+  vpc_id            = module.vpc_gateway.vpc_id
+
+  tags = {
+    Environment = "dev",
+    Name        = "akshay-eks-ssm-bastion-gateway"
   }
 }
