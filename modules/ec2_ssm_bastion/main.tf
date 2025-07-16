@@ -59,6 +59,12 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = false
 
   tags = var.tags
+
+    user_data = <<-EOF
+    #!/bin/bash
+    systemctl enable amazon-ssm-agent
+    systemctl start amazon-ssm-agent
+  EOF
 }
 
 resource "aws_security_group" "bastion" {
