@@ -8,7 +8,7 @@ terraform {
 }
 
 resource "aws_iam_role" "eks_cluster_role" {
-  name = "${var.name}-cluster-role"
+  name = "akshay-eks-${var.name}-cluster-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -40,7 +40,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_iam_role" "node_group_role" {
-  name = "${var.name}-nodegroup-role"
+  name = "$akshay-eks-{var.name}-nodegroup-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
