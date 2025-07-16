@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "eu-central-1"
-  #profile = "rapyd-sentinel"
+  profile = "rapyd-sentinel"
 }
 
 module "backend" {
@@ -47,4 +47,36 @@ module "vpc_peering" {
   tags = {
     Environment = "dev"
   }
+}
+
+module "eks_gateway" {
+  source             = "../../modules/eks"
+  name               = "eks-gateway"
+  cluster_version    = "1.29"
+  vpc_id             = module.vpc_gateway.vpc_id
+  private_subnet_ids = module.vpc_gateway.private_subnet_ids
+  tags = {
+    Environment = "dev"
+  }
+}
+
+module "eks_backend" {
+  source             = "../../modules/eks"
+  name               = "eks-backend"
+  cluster_version    = "1.29"
+  vpc_id             = module.vpc_backend.vpc_id
+  private_subnet_ids = module.vpc_backend.private_subnet_ids
+  tags = {
+    Environment = "dev"
+  }
+}
+
+resource "aws_security_group_rule" "allow_gateway_to_backend" {
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  security_group_id        = module.eks_backend.cluster_security_group_id
+  source_security_group_id = module.eks_gateway.cluster_security_group_id
+  description              = "Allow gateway EKS cluster to access backend"
 }
