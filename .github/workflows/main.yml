@@ -7,7 +7,7 @@ on:
 
 jobs:
   terraform:
-    name: Terraform Validate, Lint, Plan, Apply
+    name: Terraform CI Pipeline
     runs-on: ubuntu-latest
 
     defaults:
@@ -46,9 +46,9 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
-      # - name: Terraform Apply
-      #   if: github.ref == 'refs/heads/master'
-      #   run: terraform apply -auto-approve tfplan
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/master'
+        run: terraform apply -auto-approve tfplan
 
   # kubeval:
   #   name: Kubernetes Manifests Lint & Dry-Run
