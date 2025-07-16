@@ -40,7 +40,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_iam_role" "node_group_role" {
-  name = "$akshay-eks-{var.name}-nodegroup-role"
+  name = "akshay-eks-${var.name}-nodegroup-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
