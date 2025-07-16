@@ -50,25 +50,38 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: terraform apply -auto-approve tfplan
 
-  # kubeval:
-  #   name: Kubernetes Manifests Lint & Dry-Run
-  #   runs-on: ubuntu-latest
+  deploy-k8s:
+    name: Deploy Kubernetes Workloads
+    runs-on: ubuntu-latest
+    needs: terraform
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  #     - name: Install kubectl & kubeval
-  #       run: |
-  #         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  #         chmod +x kubectl && sudo mv kubectl /usr/local/bin/
-  #         curl -sSL https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz | tar -xz
-  #         chmod +x kubeval && sudo mv kubeval /usr/local/bin/
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
 
-  #     - name: Kubeval Manifest Lint
-  #       run: kubeval k8s-manifests/
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
 
-  #     - name: Kubectl Dry-Run
-  #       run: |
-  #         kubectl apply --dry-run=client -f k8s-manifests/backend/
-  #         kubectl apply --dry-run=client -f k8s-manifests/proxy/
+      - name: Update kubeconfig for EKS Gateway
+        run: aws eks update-kubeconfig --name eks-gateway --region eu-central-1
+
+      - name: Dry Run Gateway Manifests
+        run: |
+          kubectl apply --dry-run=client -f k8s/gateway/
+
+      - name: Update kubeconfig for EKS Backend
+        run: aws eks update-kubeconfig --name eks-backend --region eu-central-1
+
+      - name: Dry Run Backend Manifests
+        run: |
+          kubectl apply --dry-run=client -f k8s/backend/

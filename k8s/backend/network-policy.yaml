@@ -10,9 +10,6 @@ spec:
     - Ingress
   ingress:
     - from:
-        - namespaceSelector:
-            matchLabels:
-              name: default
         - podSelector:
             matchLabels:
               app: proxy
