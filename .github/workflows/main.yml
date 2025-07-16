@@ -75,7 +75,7 @@ jobs:
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --comment "Apply Gateway K8s Manifests" \
-            --targets '[{"Key":"tag:Name","Values":["akshay-eks-ssm-bastion-gateway"]}]' \
+            --targets '[{"Key":"InstanceIds","Values":["i-0a6cafcde31586d77"]}]' \
             --parameters '{
               "commands": [
                 "curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl",
@@ -92,7 +92,7 @@ jobs:
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --comment "Apply Backend K8s Manifests" \
-            --targets '[{"Key":"tag:Name","Values":["akshay-eks-ssm-bastion-backend"]}]' \
+            --targets '[{"Key":"InstanceIds","Values":["i-0358048ca98435da2"]}]' \
             --parameters '{
               "commands": [
                 "curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl",

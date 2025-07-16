@@ -58,9 +58,7 @@ resource "aws_instance" "bastion" {
 
   associate_public_ip_address = false
 
-  tags = {
-    Name = "akshay-eks-ssm-bastion"
-  }
+  tags = var.tags
 }
 
 resource "aws_security_group" "bastion" {
@@ -78,4 +76,9 @@ resource "aws_security_group" "bastion" {
   tags = merge(var.tags, {
     Name = "${var.name}-bastion-sg"
   })
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [tags["Name"]] # Optional: avoid recreation on tag name changes
+  }
 }
