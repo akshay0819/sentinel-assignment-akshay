@@ -17,7 +17,6 @@ module "vpc_gateway" {
   public_subnet_cidrs  = ["10.10.10.0/24", "10.10.11.0/24"]
   azs                  = ["eu-central-1a", "eu-central-1b"]
   region               = "eu-central-1"
-  vpc_endpoint_sg_ids  = [module.bastion_gateway.bastion_sg_id]
   tags = {
     Environment = "dev"
   }
@@ -32,7 +31,6 @@ module "vpc_backend" {
   azs                  = ["eu-central-1a", "eu-central-1b"]
   enable_nat_gateway   = true
   single_nat_gateway   = true
-  vpc_endpoint_sg_ids  = [module.bastion_backend.bastion_sg_id]
   region               = "eu-central-1"
   tags = {
     Environment = "dev"
