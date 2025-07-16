@@ -65,6 +65,11 @@ resource "aws_instance" "bastion" {
     systemctl enable amazon-ssm-agent
     systemctl start amazon-ssm-agent
   EOF
+
+   lifecycle {
+    create_before_destroy = true
+    ignore_changes = [user_data]
+  }
 }
 
 resource "aws_security_group" "bastion" {
