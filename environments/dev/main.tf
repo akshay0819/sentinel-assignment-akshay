@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "eu-central-1"
-  #profile = "rapyd-sentinel"
+  profile = "rapyd-sentinel"
 }
 
 module "backend" {
@@ -26,8 +26,10 @@ module "vpc_backend" {
   name                 = "vpc-backend"
   cidr_block           = "10.20.0.0/16"
   private_subnet_cidrs = ["10.20.1.0/24", "10.20.2.0/24"]
-  public_subnet_cidrs  = []
+  public_subnet_cidrs  = ["10.20.10.0/24", "10.20.11.0/24"]
   azs                  = ["eu-central-1a", "eu-central-1b"]
+  enable_nat_gateway   = true
+  single_nat_gateway   = true
   tags = {
     Environment = "dev"
   }
