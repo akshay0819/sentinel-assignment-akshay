@@ -39,3 +39,14 @@ variable "single_nat_gateway" {
   type        = bool
   default     = true
 }
+
+variable "vpc_endpoint_sg_ids" {
+  description = "SGs to attach to interface endpoints"
+  type        = list(string)
+  default     = []
+}
+
+variable "region" {
+  description = "AWS region"
+  type        = string
+}

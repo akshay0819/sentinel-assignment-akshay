@@ -16,6 +16,7 @@ module "vpc_gateway" {
   private_subnet_cidrs = ["10.10.1.0/24", "10.10.2.0/24"]
   public_subnet_cidrs  = ["10.10.10.0/24", "10.10.11.0/24"]
   azs                  = ["eu-central-1a", "eu-central-1b"]
+  region               = "eu-central-1"
   tags = {
     Environment = "dev"
   }
@@ -30,6 +31,8 @@ module "vpc_backend" {
   azs                  = ["eu-central-1a", "eu-central-1b"]
   enable_nat_gateway   = true
   single_nat_gateway   = true
+  vpc_endpoint_sg_ids  = [module.bastion_backend.bastion_sg_id]
+  region               = "eu-central-1"
   tags = {
     Environment = "dev"
   }
@@ -81,4 +84,18 @@ resource "aws_security_group_rule" "allow_gateway_to_backend" {
   security_group_id        = module.eks_backend.cluster_security_group_id
   source_security_group_id = module.eks_gateway.cluster_security_group_id
   description              = "Allow gateway EKS cluster to access backend"
+}
+
+module "bastion_backend" {
+  source            = "../../modules/ec2_ssm_bastion"
+  name              = "eks-bastion"
+  ami_id            = "ami-0c7217cdde317cfec"
+  instance_type     = "t3.micro"
+  subnet_id         = module.vpc_backend.private_subnet_ids[0]
+  vpc_id            = module.vpc_backend.vpc_id
+
+  tags = {
+    Environment = "dev",
+    Name = "eks-ssm-bastion"
+  }
 }
