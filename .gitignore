@@ -28,3 +28,26 @@ node_modules/
 __pycache__/
 *.pyc
 .env
+
+# Local Terraform override files
+terraform.tfvars
+*.tfvars
+
+# Terraform crash logs
+crash.*
+
+# System-wide lock/temp files
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# AWS credentials accidentally placed in root
+credentials
+
+# VS Code server settings (remote SSH sessions)
+.vscode-server/
+
+# Python virtual environments (just in case)
+venv/
+.envrc

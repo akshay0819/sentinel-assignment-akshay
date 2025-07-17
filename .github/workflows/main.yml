@@ -46,14 +46,19 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/master'
-        run: terraform apply -auto-approve tfplan
+      # - name: Terraform Apply
+      #   if: github.ref == 'refs/heads/master'
+      #   run: terraform apply -auto-approve tfplan
 
   deploy-k8s:
     name: Deploy Kubernetes Workloads
     runs-on: ubuntu-latest
     needs: terraform
+
+    env:
+      REGION: eu-central-1
+      BACKEND_CLUSTER: eks-backend
+      GATEWAY_CLUSTER: eks-gateway
 
     steps:
       - name: Checkout repository
@@ -64,43 +69,78 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
+          aws-region: ${{ env.REGION }}
 
       - name: Upload K8s Manifests to S3
         run: |
           aws s3 cp k8s/backend/ s3://rapyd-sentinel-tf-state-dev-eu-central-1/k8s/backend/ --recursive
           aws s3 cp k8s/gateway/ s3://rapyd-sentinel-tf-state-dev-eu-central-1/k8s/gateway/ --recursive
 
-      - name: Deploy Gateway Manifests via SSM
+      - name: Fetch Backend Cluster Token, CA, and Endpoint
+        id: backend
         run: |
-          aws ssm send-command \
-            --document-name "AWS-RunShellScript" \
-            --comment "Apply Gateway K8s Manifests" \
-            --targets '[{"Key":"tag:Name","Values":["akshay-eks-ssm-bastion-gateway"]}]' \
-            --parameters '{
-              "commands": [
-                "curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl",
-                "chmod +x kubectl && mv kubectl /usr/local/bin/",
-                "aws s3 cp s3://rapyd-sentinel-tf-state-dev-eu-central-1/k8s/gateway/ /tmp/k8s/gateway/ --recursive",
-                "aws eks update-kubeconfig --name eks-gateway --region eu-central-1",
-                "kubectl apply --dry-run=client -f /tmp/k8s/gateway/"
-              ]
-            }' \
-            --region eu-central-1
+          CA=$(aws eks describe-cluster \
+            --region $REGION \
+            --name $BACKEND_CLUSTER \
+            --query "cluster.certificateAuthority.data" \
+            --output text)
 
-      - name: Deploy Backend Manifests via SSM
+          ENDPOINT=$(aws eks describe-cluster \
+            --region $REGION \
+            --name $BACKEND_CLUSTER \
+            --query "cluster.endpoint" \
+            --output text)
+
+          TOKEN=$(aws eks get-token \
+            --region $REGION \
+            --cluster-name $BACKEND_CLUSTER \
+            --output json | jq -r '.status.token')
+
+          echo "CERT_AUTH_DATA=$CA" >> $GITHUB_ENV
+          echo "EKS_ENDPOINT=$ENDPOINT" >> $GITHUB_ENV
+          echo "EKS_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+      - name: Deploy Backend Manifests via SSM (Dry Run)
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --comment "Apply Backend K8s Manifests" \
+            --comment "Dry-run apply backend manifests" \
             --targets '[{"Key":"tag:Name","Values":["akshay-eks-ssm-bastion-backend"]}]' \
             --parameters '{
               "commands": [
-                "curl -LO https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl",
-                "chmod +x kubectl && mv kubectl /usr/local/bin/",
+                "mkdir -p /root/.kube",
+                "cat <<EOF > /root/.kube/config",
+                "apiVersion: v1",
+                "kind: Config",
+                "clusters:",
+                "- name: eks",
+                "  cluster:",
+                "    server: ${EKS_ENDPOINT}",
+                "    certificate-authority-data: ${CERT_AUTH_DATA}",
+                "contexts:",
+                "- name: eks",
+                "  context:",
+                "    cluster: eks",
+                "    user: eks-user",
+                "current-context: eks",
+                "users:",
+                "- name: eks-user",
+                "  user:",
+                "    token: ${EKS_TOKEN}",
+                "EOF",
                 "aws s3 cp s3://rapyd-sentinel-tf-state-dev-eu-central-1/k8s/backend/ /tmp/k8s/backend/ --recursive",
-                "aws eks update-kubeconfig --name eks-backend --region eu-central-1",
-                "kubectl apply --dry-run=client -f /tmp/k8s/backend/"
+                "kubectl --kubeconfig /root/.kube/config apply --dry-run=client -f /tmp/k8s/backend/"
               ]
             }' \
-            --region eu-central-1
+            --region ${{ env.REGION }} \
+            --cloud-watch-output-config '{"CloudWatchLogGroupName":"/ssm/eks-backend-deploy","CloudWatchOutputEnabled":true}'
+
+      - name: Setup kubectl for Gateway Cluster
+        run: |
+          aws eks update-kubeconfig \
+            --region $REGION \
+            --name $GATEWAY_CLUSTER
+
+      - name: Deploy Gateway K8s Manifests (Dry Run)
+        run: |
+          kubectl apply --dry-run=client -f k8s/gateway/

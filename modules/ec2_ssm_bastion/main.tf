@@ -31,6 +31,10 @@ resource "aws_iam_role_policy" "s3_read_access" {
   name = "akshay-eks-ssm-s3-read"
   role = aws_iam_role.ssm_ec2_role.id
 
+  lifecycle {
+    ignore_changes = [policy]
+  }
+  
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [

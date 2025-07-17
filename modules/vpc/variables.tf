@@ -49,3 +49,15 @@ variable "eks_cluster_name" {
   type    = string
   default = ""
 }
+
+variable "enable_dns_support" {
+  description = "Enable DNS support"
+  type        = bool
+  default     = true
+}
+
+variable "enable_dns_hostnames" {
+  description = "Enable DNS hostnames"
+  type        = bool
+  default     = true
+}

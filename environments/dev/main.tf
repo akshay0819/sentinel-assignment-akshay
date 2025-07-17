@@ -1,6 +1,5 @@
 provider "aws" {
   region  = "eu-central-1"
-  #profile = "rapyd-sentinel"
 }
 
 module "backend" {
@@ -18,6 +17,8 @@ module "vpc_gateway" {
   azs                  = ["eu-central-1a", "eu-central-1b"]
   region               = "eu-central-1"
   eks_cluster_name = "eks-gateway"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = {
     Environment = "dev"
   }
@@ -32,6 +33,8 @@ module "vpc_backend" {
   azs                  = ["eu-central-1a", "eu-central-1b"]
   enable_nat_gateway   = true
   single_nat_gateway   = true
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   region               = "eu-central-1"
   tags = {
     Environment = "dev"
@@ -86,6 +89,16 @@ resource "aws_security_group_rule" "allow_gateway_to_backend" {
   security_group_id        = module.eks_backend.cluster_security_group_id
   source_security_group_id = module.eks_gateway.cluster_security_group_id
   description              = "Allow gateway EKS cluster to access backend"
+}
+
+resource "aws_security_group_rule" "allow_gateway_to_backend_5678" {
+  type                     = "ingress"
+  from_port                = 5678
+  to_port                  = 5678
+  protocol                 = "tcp"
+  security_group_id        = module.eks_backend.cluster_security_group_id
+  source_security_group_id = module.eks_gateway.cluster_security_group_id
+  description              = "Allow gateway EKS cluster to access backend pod directly on port 5678"
 }
 
 module "bastion_backend" {

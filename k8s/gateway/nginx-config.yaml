@@ -7,6 +7,6 @@ data:
     server {
       listen 80;
       location / {
-        proxy_pass http://backend-service.default.svc.cluster.local:80;
+        proxy_pass http://10.20.1.169:5678;
       }
     }
