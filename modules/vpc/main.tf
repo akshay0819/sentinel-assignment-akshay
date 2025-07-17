@@ -53,14 +53,16 @@ resource "aws_route_table" "public_rt" {
   count  = length(var.public_subnet_cidrs) > 0 ? 1 : 0
   vpc_id = aws_vpc.vpc.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw[0].id
-  }
-
   tags = merge(var.tags, {
     Name = "${var.name}-public-rt"
   })
+}
+
+resource "aws_route" "public_internet_access" {
+  count                   = length(var.public_subnet_cidrs) > 0 ? 1 : 0
+  route_table_id          = aws_route_table.public_rt[0].id
+  destination_cidr_block  = "0.0.0.0/0"
+  gateway_id              = aws_internet_gateway.igw[0].id
 }
 
 resource "aws_route_table_association" "public_association" {
