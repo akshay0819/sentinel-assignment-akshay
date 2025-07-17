@@ -49,9 +49,9 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
-      # - name: Terraform Apply
-      #   if: github.ref == 'refs/heads/master'
-      #   run: terraform apply -auto-approve tfplan
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/master'
+        run: terraform apply -auto-approve tfplan
 
   deploy-k8s:
     name: Deploy Kubernetes Workloads
