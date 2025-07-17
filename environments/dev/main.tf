@@ -47,6 +47,7 @@ module "vpc_peering" {
   requester_vpc_cidr                       = module.vpc_gateway.vpc_cidr_block
   accepter_vpc_cidr                        = module.vpc_backend.vpc_cidr_block
   requester_private_subnet_route_table_ids = module.vpc_gateway.private_route_table_ids
+  requester_public_subnet_route_table_ids  = module.vpc_gateway.public_route_table_ids
   accepter_private_subnet_route_table_ids  = module.vpc_backend.private_route_table_ids
 
   tags = {
@@ -113,4 +114,24 @@ module "bastion_gateway" {
     Environment = "dev",
     Name        = "akshay-eks-ssm-bastion-gateway"
   }
+}
+
+resource "aws_security_group_rule" "bastion_to_eks_nodes_gateway" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = module.eks_gateway.cluster_security_group_id
+  source_security_group_id = module.bastion_gateway.bastion_sg_id
+  description              = "Allow bastion EC2 to access EKS API server"
+}
+
+resource "aws_security_group_rule" "bastion_to_eks_nodes_backend" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = module.eks_backend.cluster_security_group_id
+  source_security_group_id = module.bastion_backend.bastion_sg_id
+  description              = "Allow bastion EC2 to access EKS API server"
 }

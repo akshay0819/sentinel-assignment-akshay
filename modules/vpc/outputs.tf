@@ -18,6 +18,10 @@ output "private_route_table_ids" {
   value = [aws_route_table.private_rt.id]
 }
 
+output "public_route_table_ids" {
+  value = aws_route_table.public_rt[*].id
+}
+
 output "nat_gateway_id" {
   value = try(aws_nat_gateway.nat[0].id, null)
 }

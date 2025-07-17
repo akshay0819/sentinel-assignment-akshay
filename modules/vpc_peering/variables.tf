@@ -37,3 +37,8 @@ variable "tags" {
   type        = map(string)
   description = "Tags to apply"
 }
+
+variable "requester_public_subnet_route_table_ids" {
+  type    = list(string)
+  default = []
+}
