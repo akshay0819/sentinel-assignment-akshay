@@ -38,11 +38,13 @@ resource "aws_iam_role_policy" "s3_read_access" {
         Effect = "Allow",
         Action = [
           "s3:GetObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "logs:*"
         ],
         Resource = [
           "arn:aws:s3:::rapyd-sentinel-deploy-artifacts",
-          "arn:aws:s3:::rapyd-sentinel-deploy-artifacts/*"
+          "arn:aws:s3:::rapyd-sentinel-deploy-artifacts/*",
+          "arn:aws:logs:eu-central-1:*:log-group:/ssm/*"
         ]
       }
     ]
@@ -84,7 +86,7 @@ resource "aws_security_group" "bastion" {
     protocol    = "tcp"                              
     cidr_blocks = ["0.0.0.0/0"]                       
   }
-  
+
   egress {
     from_port   = 0
     to_port     = 0
