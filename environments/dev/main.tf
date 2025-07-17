@@ -17,6 +17,7 @@ module "vpc_gateway" {
   public_subnet_cidrs  = ["10.10.10.0/24", "10.10.11.0/24"]
   azs                  = ["eu-central-1a", "eu-central-1b"]
   region               = "eu-central-1"
+  eks_cluster_name = "eks-gateway"
   tags = {
     Environment = "dev"
   }
@@ -59,6 +60,7 @@ module "eks_gateway" {
   cluster_version    = "1.29"
   vpc_id             = module.vpc_gateway.vpc_id
   private_subnet_ids = module.vpc_gateway.private_subnet_ids
+  public_subnet_ids  = module.vpc_gateway.public_subnet_ids
   tags = {
     Environment = "dev"
   }

@@ -1,0 +1,67 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJRXQwY3BjSTc1M013RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRBM01UWXhNREF3TkRoYUZ3MHpOVEEzTVRReE1EQTFORGhhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUUMvZlNwQjJhZGRESzB2RENSTlpKalJXMUYreGdHMmdhNXZ3VmZHZW01Z0QvWlExazFPTHRETENkcEUKM2JqL2VXYkthNi9TR0xzK2hzUUJNRnpWNWNJVmxzTDdPenNmSm94VzVKeWZWcVJZeUZjdXc5akMxS0FZNkh1cgpJYmUvbTh0ZXRyZm0wcW1BdFJkRTY5YnppZmt3RnU0RW4vMUlyOU00cEx1UWZZMFhYN1ZVVi9ZWmlQS0oxdnhMCkpTNXZPeHNRSUt6R3NvK2FYR1F3ajhRMFhjRHlYSHhhV1h5azZIaHBidzVxYXk0TmYzZmJ3b0d5RE5UUExBVG4KemVPazk0Q1N5VHA3bEJZTEZLdnlIV3pTVEp2aG1iQXNHbmtVQm5oaFFkRnZGVnoyckZ3V1Q1K2JnV2djeWR1WQp6TitRYVlRdE5ZNW1nYVRVSE4vNDVaQzhZMUxOQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJTRVZpb1BySGxmOWw0ajlzSXoxT0dlMFhnZEV6QVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQWpNNEh0dnFLLwptSG84dGQ5UW16aFZER00zbXhwUFlZeGRoNFp0S0NtNngrMnBKbFpIbkdjekIyMzhiQllxMC9TUkw0UElpL0RXCnBJMkdadHpCVFpLTGovS2t4L2ZzaCt3aEVodCtaQzRFMFRIKyszMjFYRENvcnZlU0wxbDhmWEdwd1VueHQyd20KZG5kQVhQRkM0c2xhYjJsTENJbVM1VHlUQU1NckgzazFCNGZvb0E1cDhlYXQ0OUhSWkVkNm9kZlhWT1NReXRlQQpmalZrblB2ZXQraXlEbFlKbjlBVEwvQzdkWjRmQkdrTWJzajlTYzlEdEM5YkIrN2F3U3g0S1dnU1M2OTBZRWhkCkV5Qm0wUmprcFVIeUFnU24xdmhpNHd3eVhkMWtMUFpJK3BEV0hLWHNFQXBnVHhqRnREbHJvRUJZU0UrZjl0Y0MKU2RTNS80NlY3Z2Y1Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://7FBB160CAF9FEE2A092F8A4768A40C01.gr7.eu-central-1.eks.amazonaws.com
+  name: arn:aws:eks:eu-central-1:721500739616:cluster/eks-backend
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJRlg4WU8rSDJ2RXN3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRBM01UWXhNREF4TURWYUZ3MHpOVEEzTVRReE1EQTJNRFZhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURLY3JVWmRwZmFkTGJMeEpTeEIzMm9UbnBjUG85ZlRBSWd6dUc3K0ZCb3luZGgvMEo3czQ5eVF3ZEYKTDdBc0hWM0owVC9Jdjlmbys3bkd6UzZqbWU1NG5ZL1IrZ1o1RGpWRDI4OUwweXVtc2puWmhSN0VJaWRyclpyUApaZksxRC9YSEhuVnQyaTRNNmE1aGZ5RVJXUWI2SXZ0SEp2ZncyK0pRcy84eDNEdnQ0U2pJQ1RFMytTK3lkT0JZCmRvdStHTUdNK0lpcm1RQzY5WjhkaEhkaG9iQStLV2s4N0N2VFZkYlNYbGxtdCt2UXNPZ3dpMlRzYnZWb0xjZloKaEpuWGwvWnZuSXNOY0VQaCtMMEdrMkhZeEc3dXBoT0JGTUlXUlA4Y3BVQUNiUFUvUGh4bDRVa1ZsZlF3dXo2eAptV1JSWVFqY1d4V0hobVh4bjVucjRzZTJUa0R2QWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJUMEd1aEZkdW1Hb2dzZTNaUXhoemFqQmM2MkNEQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQkVVdEFPNzBrVwpMU2xxdnM0QUFTd1l4VjFzRVFvVWNXaGJlZXl3YXBSQlJ0QmQzUGgvN2ZhbERFUzVvcitTZ2x0WHNRVnEvcEFJClN2akgzcmc3WWdwZjkyTGxZTm14ZjR4ZTYwWStPV1lwa2VlSG12MVZpeFNHOUI0bnFVRlNUckVmdUhYankxSE0KUG4zNFQ4bDF1Y3hFMmZsaWhuOWMzRks2anZ2NzRpWjc2Wm15RmtEUjByaCs4aklIUmRyNmdvVDh4cGVGdXJkOApSZWlnd0J5ZlpQQlZyWG1ISlRXV0syTk52Q2Y4eW1zbjk4RTQ2YThENnRGaExIdm1JK1BIaVFBb1FuMDJKZTZPCitKZUM0d2RUSGJmU0gwb0hETkQ3TG5iNTcxTUhoRkJmOHBhOGx2d05jY0JWcldVbHIzK1BWN0VDR2xOTDUwbloKd3kvbW9JMVRuL01ICi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://326786C91D5B0AB8EBE9A06E524E8223.gr7.eu-central-1.eks.amazonaws.com
+  name: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+contexts:
+- context:
+    cluster: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+    user: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+  name: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+- context:
+    cluster: arn:aws:eks:eu-central-1:721500739616:cluster/eks-backend
+    user: arn:aws:eks:eu-central-1:721500739616:cluster/eks-backend
+  name: backend
+- context:
+    cluster: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+    user: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+  name: eks-gateway
+- context:
+    cluster: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+    user: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+  name: gateway
+- context:
+    cluster: arn:aws:eks:eu-central-1:721500739616:cluster/eks-backend
+    user: arn:aws:eks:eu-central-1:721500739616:cluster/eks-backend
+  name: arn:aws:eks:eu-central-1:721500739616:cluster/eks-backend
+current-context: arn:aws:eks:eu-central-1:721500739616:cluster/eks-backend
+kind: Config
+preferences: {}
+users:
+- name: arn:aws:eks:eu-central-1:721500739616:cluster/eks-backend
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1
+      interactiveMode: IfAvailable
+      args:
+      - eks
+      - get-token
+      - --region
+      - eu-central-1
+      - --cluster-name      
+      - eks-backend
+      command: aws
+      env:
+      - name: AWS_PROFILE
+        value: rapyd-sentinel
+- name: arn:aws:eks:eu-central-1:721500739616:cluster/eks-gateway
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1
+      interactiveMode: IfAvailable
+      args:
+      - eks
+      - get-token
+      - --region
+      - eu-central-1
+      - --cluster-name
+      - eks-gateway
+      command: aws
+      env:
+      - name: AWS_PROFILE
+        value: rapyd-sentinel

@@ -19,6 +19,13 @@ resource "aws_subnet" "private" {
   })
 }
 
+locals {
+  eks_tags = var.eks_cluster_name != "" ? {
+    "kubernetes.io/role/elb"                        = "1"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "owned"
+  } : {}
+}
+
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnet_cidrs)
   vpc_id                  = aws_vpc.vpc.id
@@ -28,7 +35,9 @@ resource "aws_subnet" "public" {
 
   tags = merge(var.tags, {
     Name = "${var.name}-public-subnet-${count.index + 1}"
-  })
+  },
+  local.eks_tags
+  )
 }
 
 resource "aws_internet_gateway" "igw" {

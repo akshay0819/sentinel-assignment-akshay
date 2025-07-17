@@ -9,3 +9,8 @@ output "cluster_endpoint" {
 output "cluster_arn" {
   value = aws_eks_cluster.this.arn
 }
+
+variable "public_subnet_ids" {
+  type    = list(string)
+  default = []
+}
