@@ -1,19 +1,6 @@
 
 # 📘 Rapyd Sentinel: Split Architecture (PoC)
 
-## Architecture Diagram
-
-![Architecture](docs/architecture.png)
-
-### ⚠️ Trade-offs & Unused Resources
-
-- The **Gateway EKS node group was placed in public subnets** to simplify ALB provisioning and enable direct testing.
-- A **NAT Gateway** was created in the Gateway VPC but remains unused — it was provisioned as part of the standard module setup.
-- A better approach in production would be to:
-  - Move the **Gateway EKS node group into private subnets**
-  - Use the **existing bastion EC2 with SSM access** to apply manifest changes
-  - Attach a **public-facing Application Load Balancer (ALB)** to expose the Gateway service securely
-
 
 ## 🚀 Project Overview
 
@@ -31,6 +18,19 @@ It showcases:
 - **Private manifest application via SSM-enabled EC2**
 
 The project set up can be tested in http://acf49d36aa4b8437992e69ebde4f417c-1851791136.eu-central-1.elb.amazonaws.com/
+
+---
+
+## Architecture Diagram
+
+![Architecture](docs/architecture.png)
+
+- The **Gateway EKS node group was placed in public subnets** to simplify ALB provisioning and enable direct testing.
+- A **NAT Gateway** was created in the Gateway VPC but remains unused — it was provisioned as part of the standard module setup.
+- A better approach in production would be to:
+  - Move the **Gateway EKS node group into private subnets**
+  - Use the **existing bastion EC2 with SSM access** to apply manifest changes
+  - Attach a **public-facing Application Load Balancer (ALB)** to expose the Gateway service securely
 
 ---
 
