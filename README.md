@@ -34,6 +34,14 @@ The project set up can be tested in http://acf49d36aa4b8437992e69ebde4f417c-1851
 
 ---
 
+## Backend Service Response (via Gateway Load balancer) 
+
+To demonstrate successful communication from the public-facing Load balancer to the backend deployed in a restricted EKS cluster, here’s the live response from a browser:
+
+![Backend Browser Response](docs/backend-browser-response.png)
+
+⚠️ Note: In a production setup, this would be routed using internal DNS-based service discovery rather than a hardcoded pod IP. This screenshot serves as proof-of-response during the PoC evaluation window.
+
 ## 📁 Project Structure
 
 ```bash
