@@ -1,6 +1,20 @@
 
 # 📘 Rapyd Sentinel: Split Architecture (PoC)
 
+## Architecture Diagram
+
+![Architecture](docs/architecture.png)
+
+### ⚠️ Trade-offs & Unused Resources
+
+- The **Gateway EKS node group was placed in public subnets** to simplify ALB provisioning and enable direct testing.
+- A **NAT Gateway** was created in the Gateway VPC but remains unused — it was provisioned as part of the standard module setup.
+- A better approach in production would be to:
+  - Move the **Gateway EKS node group into private subnets**
+  - Use the **existing bastion EC2 with SSM access** to apply manifest changes
+  - Attach a **public-facing Application Load Balancer (ALB)** to expose the Gateway service securely
+
+
 ## 🚀 Project Overview
 
 This project is a **proof-of-concept (PoC)** for the **Rapyd Sentinel architecture**, designed as per the technical challenge document.
@@ -11,10 +25,12 @@ It showcases:
   - `vpc-backend` for private backend services
 - **Two Amazon EKS clusters**:
   - Each VPC contains two **private subnets**
-  - In the gateway VPC, **EKS worker nodes are placed in public subnets** to support LoadBalancer (ALB) provisioning
+  - In the gateway VPC, **EKS worker nodes are placed in public subnets** to support LoadBalancer (Classic Load balancer) provisioning
 - **Secure networking via VPC Peering**
 - **CI/CD with GitHub Actions**
 - **Private manifest application via SSM-enabled EC2**
+
+The project set up can be tested in http://acf49d36aa4b8437992e69ebde4f417c-1851791136.eu-central-1.elb.amazonaws.com/
 
 ---
 
@@ -47,7 +63,7 @@ It showcases:
 
 ---
 
-## 🧱 How to Clone and Run the Project
+## How to Clone and Run the Project
 
 ### ✅ Prerequisites
 - Terraform `>= 1.5.7`
@@ -55,7 +71,7 @@ It showcases:
 - `kubectl`
 - GitHub access to this repo
 
-### 🧬 Clone & Initialize
+### Clone & Initialize
 ```bash
 git clone https://github.com/akshay0819/sentinel-assignment-akshay
 cd sentinel-assignment-akshay
@@ -67,9 +83,9 @@ terraform plan
 terraform apply
 ```
 
-> 🔄 This setup uses a `dev` environment but can easily be extended to `staging`, `prod`, etc.
+> This setup uses a `dev` environment but can easily be extended to `staging`, `prod`, etc.
 
-> 💡 If starting from scratch, you may begin with **local backend** (`terraform init` without S3 config), and then switch to **remote S3 backend** as defined in `backend.tf`.
+> If starting from scratch, you may begin with **local backend** (`terraform init` without S3 config), and then switch to **remote S3 backend** as defined in `backend.tf`.
 
 ### 🛠️ What Gets Created
 - Two VPCs (`vpc-gateway`, `vpc-backend`)
@@ -90,11 +106,11 @@ terraform apply
 
 ---
 
-## 🌐 Networking Configuration Between VPCs & Clusters
+## Networking Configuration Between VPCs & Clusters
 
-### 🗺️ Topology
+### Topology
 - **Gateway VPC (10.10.0.0/16)**:
-  - Public subnets: for EKS workers + ALB
+  - Public subnets: for EKS workers + Classic Load balancer
 - **Backend VPC (10.20.0.0/16)**:
   - Private subnets only
   - No internet access
@@ -107,16 +123,16 @@ terraform apply
 
 ---
 
-## 🔁 Proxy → Backend Connection
+## Proxy → Backend Connection
 
-- The **NGINX proxy** in the `eks-gateway` cluster is exposed via an **ALB**
+- The **NGINX proxy** in the `eks-gateway` cluster is exposed via an **Classic Load balancer**
 - It forwards traffic to a **hardcoded backend URL**:
   ```
   http://acf49d36aa4b8437992e69ebde4f417c-1851791136.eu-central-1.elb.amazonaws.com/
   ```
 - Returns: `Hello from backend`
 
-#### ✅ Example Test:
+#### Example Test:
 ```bash
 curl http://acf49d36aa4b8437992e69ebde4f417c-1851791136.eu-central-1.elb.amazonaws.com/
 # Output: Hello from backend
@@ -176,17 +192,16 @@ curl http://acf49d36aa4b8437992e69ebde4f417c-1851791136.eu-central-1.elb.amazona
 2. No Secrets Manager endpoint
 3. No DNS resolver config
 4. OIDC not used
-5. Gateway EKS in public subnets (for speed)
+5. Gateway EKS in public subnets (for speed of debugging and deployments) and use ALB instead of Classic LB for public access.
 6. Gateway NAT created but unused (needs cleanup)
 7. Limited CI/CD validations
-
 ---
 
 ## 💰 Cost Optimization Notes
 
 - Used `t3.micro` for bastion
 - Used `t3.small` for EKS nodes
-- Future: enable auto-scaling, use Spot instances
+- Future: use Spot instances
 
 ---
 
@@ -197,3 +212,4 @@ curl http://acf49d36aa4b8437992e69ebde4f417c-1851791136.eu-central-1.elb.amazona
 - Add CloudWatch + Prometheus
 - Use Secrets Manager/Vault
 - Clean up infra and enhance CI/CD
+- Put Gateway EKS in private subnets and use the created gatway bastion with ssm for changes in pods and create a Apllication load balancer for public access. 
