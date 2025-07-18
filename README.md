@@ -208,8 +208,9 @@ curl http://acf49d36aa4b8437992e69ebde4f417c-1851791136.eu-central-1.elb.amazona
 ## 🔭 What We Would Do Next
 
 - Add mTLS between proxy/backend
-- Replace hardcoded IP with internal DNS
-- Add CloudWatch + Prometheus
-- Use Secrets Manager/Vault
+- Add HTTPS support for the gateway ALB using a proper domain and SSL certificate
+- Replace hardcoded IP with internal DNS-based service discovery
+- Add CloudWatch + Prometheus for centralized logging and observability
+- Use Secrets Manager/Vault to securely store and access sensitive values
 - Clean up infra and enhance CI/CD
 - Put Gateway EKS in private subnets and use the created gatway bastion with ssm for changes in pods and create a Apllication load balancer for public access. 
