@@ -94,6 +94,29 @@ terraform apply
 > This setup uses a `dev` environment but can easily be extended to `staging`, `prod`, etc.
 
 > If starting from scratch, you may begin with **local backend** (`terraform init` without S3 config), and then switch to **remote S3 backend** as defined in `backend.tf`.
+Update Gateway Proxy with Hardcoded Backend Pod IP
+> Since DNS resolver setup wasn’t implemented in this POC, the gateway's NGINX proxy is configured to forward traffic to the backend via a hardcoded pod IP. This is not production-recommended but used here as a temporary workaround.
+
+Step-by-Step: Get the Backend Pod IP via SSM
+Go to AWS SSM → Session Manager → Connect to the EC2 instance (eks-ssm-bastion) in the private subnet.
+
+Run the following to get the backend pod IP:
+
+aws eks update-kubeconfig --name eks-backend --region eu-central-1
+kubectl get pods -n backend -o wide
+Copy the pod IP, e.g. 10.20.32.42.
+
+Update k8s/gateway/nginx.conf
+Modify this section in the config:
+
+location / {
+    proxy_pass http://10.20.32.42:5678;
+}
+Redeploy Gateway Proxy
+After editing the config:
+
+# In your CI/CD flow or manually:
+kubectl rollout restart deployment gateway -n gateway
 
 ### 🛠️ What Gets Created
 - Two VPCs (`vpc-gateway`, `vpc-backend`)
