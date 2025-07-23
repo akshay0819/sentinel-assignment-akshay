@@ -107,7 +107,7 @@ jobs:
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
-            --comment "Dry-run apply backend manifests" \
+            --comment "apply backend manifests" \
             --targets '[{"Key":"tag:Name","Values":["akshay-eks-ssm-bastion-backend"]}]' \
             --parameters '{
               "commands": [
@@ -132,7 +132,7 @@ jobs:
                 "    token: ${EKS_TOKEN}",
                 "EOF",
                 "aws s3 cp s3://rapyd-sentinel-tf-state-dev-eu-central-1/k8s/backend/ /tmp/k8s/backend/ --recursive",
-                "kubectl --kubeconfig /root/.kube/config apply --dry-run=client -f /tmp/k8s/backend/"
+                "kubectl --kubeconfig /root/.kube/config apply -f /tmp/k8s/backend/"
               ]
             }' \
             --region ${{ env.REGION }} \
@@ -144,6 +144,6 @@ jobs:
             --region $REGION \
             --name $GATEWAY_CLUSTER
 
-      - name: Deploy Gateway K8s Manifests (Dry Run)
+      - name: Deploy Gateway K8s Manifests
         run: |
-          kubectl apply --dry-run=client -f k8s/gateway/
+          kubectl apply -f k8s/gateway/
